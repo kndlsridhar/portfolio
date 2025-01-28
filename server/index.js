@@ -102,12 +102,14 @@ app.get("/getProjects/:id",(req,res)=>{
     .catch(err => res.json(err))
 })
 
-app.put("/updateProjects/:id", (req, res) => {
-  const id = req.params.id
+app.put("/updateProjects/:id",upload.single('img'), (req, res) => {
+  const id = req.params.id;
+    
+const imgPath = req.file.path.replace(/\\/g, '/');
   ProjectModel.findByIdAndUpdate({ _id: id }, {
     title: req.body.title,
-    desc: req.body.desc,
-    img: req.body.img,
+    desc: req.body.desc
+    img: imgPath.req.body.img,
     category: req.body.category,
     type: req.body.type,
     url: req.body.url })
