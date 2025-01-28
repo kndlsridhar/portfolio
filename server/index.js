@@ -102,20 +102,45 @@ app.get("/getProjects/:id",(req,res)=>{
     .catch(err => res.json(err))
 })
 
-app.put("/updateProjects/:id", (req, res) => {
-  const id = req.params.id;
+// app.put("/updateProjects/:id", (req, res) => {
+//   const id = req.params.id;
     
-const imgPath = req.file.path.replace(/\\/g, '/');
-  ProjectModel.findByIdAndUpdate({ _id: id }, {
-    title: req.body.title,
-    desc: req.body.desc,
-    img: req.body.img,
-    category: req.body.category,
-    type: req.body.type,
-    url: req.body.url })
-    .then(projects => res.json(projects))
-    .catch(err => res.json(err))
-})
+// const imgPath = req.file.path.replace(/\\/g, '/');
+//   ProjectModel.findByIdAndUpdate({ _id: id }, {
+//     title: req.body.title,
+//     desc: req.body.desc,
+//     img: req.body.img,
+//     category: req.body.category,
+//     type: req.body.type,
+//     url: req.body.url })
+//     .then(projects => res.json(projects))
+//     .catch(err => res.json(err))
+// })
+
+app.put("/updateProjects/:id", upload.single('img'), (req, res) => {
+  const id = req.params.id;
+  const { title, desc, category, type, url } = req.body;
+  let imgPath = req.body.img;
+
+  if (req.file) {
+    imgPath = req.file.path.replace(/\\/g, '/');
+  }
+
+  ProjectModel.findByIdAndUpdate(
+    { _id: id },
+    {
+      title,
+      desc,
+      img: imgPath,
+      category,
+      type,
+      url,
+    },
+    { new: true }
+  )
+    .then((projects) => res.json(projects))
+    .catch((err) => res.json(err));
+});
 
 app.delete("/deleteProjects/:id",(req,res)=>{
   const id = req.params.id
